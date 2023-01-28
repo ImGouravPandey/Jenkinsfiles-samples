@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone repository') {
+            steps {
+                git 'https://github.com/user/repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                withAWS(region: 'us-west-2', credentials: 'aws-credentials') {
+                    sh 'aws s3 cp --recursive dist/ s3://my-bucket/path'
+                }
+            }
+        }
+    }
+}
